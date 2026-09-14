@@ -85,11 +85,11 @@
 
   var qs = params.toString();
 
-  fetch('/.netlify/functions/verify-payment?' + qs)
+  fetch('/api/verify-payment?' + qs)
     .then(function (res) { return res.json(); })
     .then(function (data) {
       if (data && data.valid) {
-        document.getElementById('download-link').href = '/.netlify/functions/download?' + qs;
+        document.getElementById('download-link').href = '/api/download?' + qs;
         showState('state-success');
       } else {
         showState('state-invalid');
