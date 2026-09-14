@@ -455,6 +455,10 @@ footer{ background:var(--navy-deep); color:#8b95b3; padding:36px 0; }
   display:flex; align-items:center; gap:6px;
 }
 .co-pay-btn-wrap{ margin-top:26px; }
+.co-pay-btn-wrap form {
+  display: flex;
+  justify-content: center;
+}
 .co-fallback-note{
   margin-top:16px; font-family:'Poppins',sans-serif; font-size:11.5px; color:var(--gray); line-height:1.6;
 }
