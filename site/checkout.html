@@ -62,36 +62,13 @@
       </div>
 
       <div class="co-pay-btn-wrap">
-
-        <!--
-          ============================================================
-          TRUE IN-PAGE CHECKOUT (recommended) — currently disabled
-          ============================================================
-          The button below opens Razorpay's secure checkout directly
-          on this page (no redirect to rzp.io at all). To turn it on:
-
-          1. Razorpay Dashboard, Payment Button, Create Payment Button
-             (set the amount to rupees 499, or whatever you're charging)
-          2. Copy the "data-payment_button_id" value it gives you
-             (looks like: pl_XXXXXXXXXXXXXX)
-          3. Paste it into the data-payment_button_id attribute below
-          4. Delete the "co-fallback" anchor block underneath this comment
-          5. Remove this whole comment block's start and end markers so
-             the form and script tags below become live HTML
-
-          <form></form>
-          <script
-            src="https://checkout.razorpay.com/v1/payment-button.js"
-            data-payment_button_id="PASTE_YOUR_BUTTON_ID_HERE"
-            async>
-          </script>
-        -->
-
-        <!-- FALLBACK (active now): goes to your hosted Razorpay page -->
-        <a class="btn btn-primary btn-block co-fallback" href="https://rzp.io/rzp/sOF0TqBo">
-          Pay ₹499 Securely →
-        </a>
-        <p class="co-fallback-note">You'll be redirected to Razorpay's secure payment page to complete your purchase, then brought back here to download instantly.</p>
+        <form></form>
+        <script
+          src="https://checkout.razorpay.com/v1/payment-button.js"
+          data-payment_button_id="pl_TboClL8loWEJkU"
+          async>
+        </script>
+        <p class="co-fallback-note">You're paying securely through Razorpay — your card and UPI details never touch our servers.</p>
       </div>
 
       <div class="co-secure">🔒 256-bit encrypted checkout. Your card details never touch our servers.</div>
