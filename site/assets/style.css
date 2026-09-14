@@ -458,6 +458,9 @@ footer{ background:var(--navy-deep); color:#8b95b3; padding:36px 0; }
 .co-pay-btn-wrap form {
   display: flex;
   justify-content: center;
+  transform: scale(1.25);
+  transform-origin: center;
+  margin: 20px 0;
 }
 .co-fallback-note{
   margin-top:16px; font-family:'Poppins',sans-serif; font-size:11.5px; color:var(--gray); line-height:1.6;
