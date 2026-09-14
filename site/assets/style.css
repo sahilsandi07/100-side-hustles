@@ -425,8 +425,17 @@ footer{ background:var(--navy-deep); color:#8b95b3; padding:36px 0; }
   font-family:'Poppins',sans-serif; font-size:13px; color:#9BA6C2; display:flex; align-items:center; gap:6px;
 }
 .co-grid{
-  max-width:920px; margin:0 auto;
-  display:grid; grid-template-columns: 1fr 1.15fr; gap:26px; align-items:start;
+  max-width:920px;
+  margin:0 auto;
+  display:grid;
+  grid-template-columns:1fr 1.15fr;
+  gap:26px;
+  align-items:stretch;
+}
+
+.co-summary,
+.co-pay{
+  height:100%;
 }
 @media(max-width:760px){ .co-grid{ grid-template-columns:1fr; } }
 .co-summary{
