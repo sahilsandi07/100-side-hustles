@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Your Ebook Is Ready — 100 Side Hustles to Make Money Online</title>
+<title>Your Ebook — 100 Side Hustles to Make Money Online</title>
 <meta name="robots" content="noindex, nofollow">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,27 +15,91 @@
 
 <div class="dl-page">
   <div class="dl-card">
-    <div class="dl-check">✓</div>
-    <span class="eyebrow">Payment Successful</span>
-    <h1 style="margin-top:10px;">Thank you — your ebook is ready.</h1>
-    <p class="lede">You now have full access to 100 Side Hustles to Make Money Online. Click below to download your copy.</p>
 
-    <img class="dl-cover" src="assets/img/cover.jpg" alt="100 Side Hustles to Make Money Online — ebook cover">
+    <!-- STATE 1: checking the payment -->
+    <div id="state-checking" class="dl-state active">
+      <div class="dl-spinner"></div>
+      <span class="eyebrow">Verifying Payment</span>
+      <h1 style="margin-top:10px;">Just a moment…</h1>
+      <p class="lede">We're confirming your payment with Razorpay before unlocking your download.</p>
+    </div>
 
-    <a class="btn btn-primary btn-block dl-btn" href="assets/files/100-side-hustles-ebook.pdf" download>
-      Download the Ebook (PDF)
-    </a>
+    <!-- STATE 2: verified, show download -->
+    <div id="state-success" class="dl-state">
+      <div class="dl-check">✓</div>
+      <span class="eyebrow">Payment Successful</span>
+      <h1 style="margin-top:10px;">Thank you — your ebook is ready.</h1>
+      <p class="lede">You now have full access to 100 Side Hustles to Make Money Online. Click below to download your copy.</p>
 
-    <div class="dl-note">
-      <strong>Tip:</strong> save the PDF somewhere you'll find it again — your phone's Files app, Google Drive, or your laptop's Downloads folder. The book is yours to keep and re-read anytime.
+      <img class="dl-cover" src="assets/img/cover.jpg" alt="100 Side Hustles to Make Money Online — ebook cover">
+
+      <a id="download-link" class="btn btn-primary btn-block dl-btn" href="#">
+        Download the Ebook (PDF)
+      </a>
+
+      <div class="dl-note">
+        <strong>Tip:</strong> save the PDF somewhere you'll find it again — your phone's Files app, Google Drive, or your laptop's Downloads folder. The book is yours to keep and re-read anytime.
+      </div>
+    </div>
+
+    <!-- STATE 3: no valid payment found -->
+    <div id="state-invalid" class="dl-state">
+      <div class="dl-check error">✕</div>
+      <span class="eyebrow">Access Denied</span>
+      <h1 style="margin-top:10px;">We couldn't verify a payment here.</h1>
+      <p class="lede">This page only unlocks right after a successful Razorpay payment. If you haven't purchased yet, or your payment didn't go through, please head back and try again.</p>
+
+      <a class="btn btn-primary btn-block dl-btn" href="checkout.html">
+        Go to Checkout
+      </a>
+
+      <div class="dl-note">
+        Already paid and seeing this by mistake? Use the exact confirmation link Razorpay showed or emailed you right after payment — links to this page only work for a few minutes and only once.
+      </div>
     </div>
 
     <div class="dl-footer">
-      Having trouble downloading? Reload this page and tap the button again, or reach out to us for help.<br>
+      Having trouble? Reach out to us for help.<br>
       © 2026 Sahil Sandi. All rights reserved.
     </div>
   </div>
 </div>
+
+<script>
+(function () {
+  function showState(id) {
+    document.querySelectorAll('.dl-state').forEach(function (el) { el.classList.remove('active'); });
+    document.getElementById(id).classList.add('active');
+  }
+
+  var params = new URLSearchParams(window.location.search);
+  var hasParams = params.has('razorpay_payment_id') && params.has('razorpay_signature');
+
+  if (!hasParams) {
+    // Nobody should land here without Razorpay's own redirect params attached —
+    // manually typing/visiting this URL has nothing to verify, so we don't
+    // even bother calling the function.
+    showState('state-invalid');
+    return;
+  }
+
+  var qs = params.toString();
+
+  fetch('/.netlify/functions/verify-payment?' + qs)
+    .then(function (res) { return res.json(); })
+    .then(function (data) {
+      if (data && data.valid) {
+        document.getElementById('download-link').href = '/.netlify/functions/download?' + qs;
+        showState('state-success');
+      } else {
+        showState('state-invalid');
+      }
+    })
+    .catch(function () {
+      showState('state-invalid');
+    });
+})();
+</script>
 
 </body>
 </html>
