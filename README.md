@@ -33,6 +33,10 @@ The Razorpay Payment Button redirects to this site with a `payment_id`. The Verc
 
 The Key ID and Key Secret must be from the same Razorpay mode. Use the **Live** pair for the live payment button and the **Test** pair for a test button. If you change the price, also set `RAZORPAY_PAYMENT_AMOUNT` to the new price in paise (for example, `49900` for ₹499). Without that variable, the site expects ₹499.
 
+### Testing with a ₹1 payment
+
+A ₹1 payment is intentionally rejected while the site expects ₹499. To test the complete download flow with ₹1, temporarily set both the Razorpay Payment Button amount and the Vercel `RAZORPAY_PAYMENT_AMOUNT` variable to `100` (paise), redeploy, and make the test payment. Before accepting real customers, change the button back to ₹499, set `RAZORPAY_PAYMENT_AMOUNT` back to `49900`, and redeploy again.
+
 ## Configure Razorpay redirect
 
 In Razorpay Dashboard, open the Payment Button with ID `pl_TboClL8loWEJkU` and set its successful-payment redirect URL to:
