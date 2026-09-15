@@ -39,11 +39,23 @@ If you use a custom domain, set the redirect URL to that domain after it is conn
 
 ## How the download protection works
 
-- `download.html` reads the Razorpay redirect parameters and asks `/api/verify-payment` to validate Razorpay’s HMAC signature on the server.
+- `download.html` reads the Razorpay redirect parameters and asks `/api/verify-payment` to validate Razorpay’s HMAC signature on the server. It accepts both Razorpay Payment Link and standard Checkout signatures.
 - `/api/download` validates that same signature again before returning the PDF.
 - The Razorpay secret exists only in Vercel environment variables. The PDF is bundled with the serverless function rather than linked from the public pages.
 
 This verifies that a payment redirect is authentic. The signed redirect URL should still be treated as private: anyone who has a valid URL can use it while Razorpay considers its signature valid. For revocable, per-customer download access, add a database and Razorpay webhooks before issuing a short-lived download token.
+
+## If a paid customer sees “Access Denied”
+
+The page now shows the specific cause. The most common message is a **signature mismatch**. In that case:
+
+1. Confirm `RAZORPAY_KEY_SECRET` is the **Key Secret**, not the Key ID.
+2. Confirm the secret is from the same Razorpay mode as the button: **Test** button → Test secret; **Live** button → Live secret.
+3. Confirm the variable is assigned to the Vercel **Production** environment for the live site.
+4. Redeploy the Vercel project after any variable change.
+5. Retry with the exact Razorpay redirect URL, or make a new test payment to confirm the full flow.
+
+If the page says payment parameters are missing, set the Payment Button’s successful-payment redirect URL exactly to `https://your-domain.vercel.app/download.html` and complete the payment through that button.
 
 ## Update the price or payment button
 
