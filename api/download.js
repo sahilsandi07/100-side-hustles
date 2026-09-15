@@ -2,13 +2,13 @@ const fs = require('fs');
 const path = require('path');
 const { verifyPayment } = require('./_payment');
 
-module.exports = (request, response) => {
+module.exports = async (request, response) => {
   if (request.method !== 'GET') {
     response.setHeader('Allow', 'GET');
     return response.status(405).send('Method not allowed.');
   }
 
-  const verification = verifyPayment(request.query || {}, process.env.RAZORPAY_KEY_SECRET);
+  const verification = await verifyPayment(request.query || {}, process.env);
   if (!verification.valid) {
     return response.status(403).type('text/plain').send(
       'We could not verify a successful payment for this link. If you just paid, use the exact link Razorpay sent you after checkout.'

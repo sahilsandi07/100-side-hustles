@@ -36,7 +36,7 @@ function getSignaturePayload(query) {
   return null;
 }
 
-function verifyPayment(query, secret) {
+function verifySignedPayment(query, secret) {
   if (!secret || !secret.trim()) return { valid: false, reason: 'server_not_configured' };
   if (!query.razorpay_payment_id || !query.razorpay_signature) {
     return { valid: false, reason: 'missing_payment_parameters' };
@@ -52,6 +52,60 @@ function verifyPayment(query, secret) {
   }
 
   return { valid: true, kind: details.kind };
+}
+
+async function verifyPayment(query, environment, fetchImplementation = globalThis.fetch) {
+  const secret = environment.RAZORPAY_KEY_SECRET;
+
+  // Payment Links and standard Razorpay Checkout return a server-verifiable
+  // HMAC signature. Keep supporting them when those parameters are present.
+  if (query.razorpay_signature) {
+    return verifySignedPayment(query, secret);
+  }
+
+  // Razorpay Payment Buttons redirect with payment_id only. Look up that ID
+  // directly with Razorpay instead of trusting a browser redirect parameter.
+  const paymentId = typeof query.payment_id === 'string' ? query.payment_id : '';
+  const keyId = environment.RAZORPAY_KEY_ID;
+  const expectedAmount = Number(environment.RAZORPAY_PAYMENT_AMOUNT || '49900');
+
+  if (!paymentId) return { valid: false, reason: 'missing_payment_parameters' };
+  if (!keyId || !keyId.trim() || !secret || !secret.trim()) {
+    return { valid: false, reason: 'server_not_configured' };
+  }
+  if (!/^pay_[A-Za-z0-9]+$/.test(paymentId) || !Number.isInteger(expectedAmount) || expectedAmount < 1) {
+    return { valid: false, reason: 'invalid_payment_response' };
+  }
+
+  try {
+    const credentials = Buffer.from(`${keyId.trim()}:${secret.trim()}`).toString('base64');
+    const razorpayResponse = await fetchImplementation(
+      `https://api.razorpay.com/v1/payments/${encodeURIComponent(paymentId)}`,
+      {
+        headers: {
+          Authorization: `Basic ${credentials}`,
+          Accept: 'application/json',
+        },
+      }
+    );
+
+    if (!razorpayResponse.ok) return { valid: false, reason: 'payment_lookup_failed' };
+
+    const payment = await razorpayResponse.json();
+    const paid = payment &&
+      payment.id === paymentId &&
+      payment.status === 'captured' &&
+      payment.captured === true &&
+      payment.currency === 'INR' &&
+      payment.amount === expectedAmount &&
+      Number(payment.amount_refunded || 0) === 0;
+
+    return paid
+      ? { valid: true, kind: 'payment_button' }
+      : { valid: false, reason: 'payment_not_completed' };
+  } catch (error) {
+    return { valid: false, reason: 'payment_lookup_failed' };
+  }
 }
 
 module.exports = { verifyPayment };
