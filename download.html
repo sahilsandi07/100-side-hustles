@@ -90,9 +90,10 @@
   }
 
   var params = new URLSearchParams(window.location.search);
-  var hasParams = params.has('razorpay_payment_id') && params.has('razorpay_signature');
+  var hasSignedParams = params.has('razorpay_payment_id') && params.has('razorpay_signature');
+  var hasPaymentButtonId = params.has('payment_id');
 
-  if (!hasParams) {
+  if (!hasSignedParams && !hasPaymentButtonId) {
     // Nobody should land here without Razorpay's own redirect params attached —
     // manually typing/visiting this URL has nothing to verify, so we don't
     // even bother calling the function.
