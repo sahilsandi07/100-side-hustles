@@ -78,6 +78,11 @@
       missing_payment_parameters: 'Razorpay did not send the payment confirmation parameters to this page. Please complete payment again using the checkout button.',
       unsupported_payment_response: 'This Razorpay checkout response is missing the payment-link or order details required to verify it. Please contact the seller.',
       payment_not_completed: 'This payment is not marked as completed by Razorpay. Please return to checkout and try again.',
+      payment_not_captured: 'Razorpay has not captured this payment yet. In Razorpay Dashboard, enable automatic payment capture, then complete a new payment.',
+      payment_amount_mismatch: 'Razorpay confirmed a payment, but its amount does not match the ₹499 ebook price. Check the Payment Button amount and RAZORPAY_PAYMENT_AMOUNT setting.',
+      payment_refunded: 'This payment has been refunded, so the ebook download cannot be unlocked.',
+      payment_not_found: 'Razorpay could not find this payment under the configured Live account. Confirm the payment button and Vercel credentials use the same Razorpay account and mode.',
+      razorpay_credentials_rejected: 'Razorpay rejected the Vercel API credentials. Re-copy the matching Live API Key and Live Key Secret from Razorpay, save both in Vercel Production, and redeploy.',
       signature_mismatch: 'We could not match this Razorpay payment signature. The Vercel secret must be the Key Secret for the same Razorpay mode (Test or Live) as this payment button. After correcting it, redeploy and use a new payment redirect link.',
       invalid_payment_response: 'The payment confirmation returned by Razorpay was not in the expected format. Please contact the seller.',
       payment_lookup_failed: 'We could not check this payment with Razorpay. Please try again shortly. If it continues, the seller should confirm RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET in Vercel.'

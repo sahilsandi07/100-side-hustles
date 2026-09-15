@@ -89,20 +89,31 @@ async function verifyPayment(query, environment, fetchImplementation = globalThi
       }
     );
 
-    if (!razorpayResponse.ok) return { valid: false, reason: 'payment_lookup_failed' };
+    if (!razorpayResponse.ok) {
+      if (razorpayResponse.status === 401 || razorpayResponse.status === 403) {
+        return { valid: false, reason: 'razorpay_credentials_rejected' };
+      }
+      if (razorpayResponse.status === 404) {
+        return { valid: false, reason: 'payment_not_found' };
+      }
+      return { valid: false, reason: 'payment_lookup_failed' };
+    }
 
     const payment = await razorpayResponse.json();
-    const paid = payment &&
-      payment.id === paymentId &&
-      payment.status === 'captured' &&
-      payment.captured === true &&
-      payment.currency === 'INR' &&
-      payment.amount === expectedAmount &&
-      Number(payment.amount_refunded || 0) === 0;
+    if (!payment || payment.id !== paymentId) {
+      return { valid: false, reason: 'payment_not_found' };
+    }
+    if (payment.status !== 'captured' || payment.captured !== true) {
+      return { valid: false, reason: 'payment_not_captured' };
+    }
+    if (payment.currency !== 'INR' || payment.amount !== expectedAmount) {
+      return { valid: false, reason: 'payment_amount_mismatch' };
+    }
+    if (Number(payment.amount_refunded || 0) > 0) {
+      return { valid: false, reason: 'payment_refunded' };
+    }
 
-    return paid
-      ? { valid: true, kind: 'payment_button' }
-      : { valid: false, reason: 'payment_not_completed' };
+    return { valid: true, kind: 'payment_button' };
   } catch (error) {
     return { valid: false, reason: 'payment_lookup_failed' };
   }
